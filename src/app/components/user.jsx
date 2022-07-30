@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Bookmark from "./bookmark";
 import Quality from "./quality";
 import PropTypes from "prop-types";
@@ -10,14 +10,10 @@ const User = ({
     profession,
     completedMeetings,
     rate,
-    onDelete,
-    ...props
+    bookmark,
+    onToggleBookMark,
+    onDelete
 }) => {
-    const [bookmark, setBookMark] = useState(false);
-    const handleBookmark = () => {
-        setBookMark((prevState) => !prevState);
-    };
-
     return (
         <tr>
             <td>{name}</td>
@@ -30,7 +26,10 @@ const User = ({
             <td>{completedMeetings}</td>
             <td>{rate}/5</td>
             <td>
-                <Bookmark status={bookmark} onBookmark={handleBookmark} />
+                <Bookmark
+                    status={bookmark}
+                    onClick={() => onToggleBookMark(_id)}
+                />
             </td>
             <td>
                 <button
@@ -47,10 +46,18 @@ const User = ({
 User.propTypes = {
     _id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    qualities: PropTypes.array.isRequired,
+    qualities: PropTypes.arrayOf(
+        PropTypes.shape({
+            _id: PropTypes.string,
+            name: PropTypes.string,
+            color: PropTypes.string
+        })
+    ).isRequired,
     profession: PropTypes.object.isRequired,
     completedMeetings: PropTypes.number.isRequired,
     rate: PropTypes.number.isRequired,
+    bookmark: PropTypes.bool,
+    onToggleBookMark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired
 };
 
