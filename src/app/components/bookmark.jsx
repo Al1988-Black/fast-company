@@ -2,9 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const Bookmark = ({ status, ...rest }) => {
+    const bookmarkClassName = status ? "-heart-fill" : "";
     return (
         <button {...rest}>
-            <i className={"bi bi-bookmark" + (status ? "-heart-fill" : "")}></i>
+            <i className={"bi bi-bookmark" + bookmarkClassName}></i>
         </button>
     );
 };
