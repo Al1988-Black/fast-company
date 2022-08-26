@@ -6,6 +6,8 @@ import UsersTable from "./usersTable";
 import { paginate } from "../utils/paginate";
 import GroupList from "./groupList";
 import _ from "lodash";
+import SearchUsers from "./searchUsers";
+import { validator } from "../utils/validator";
 
 const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -15,6 +17,15 @@ const Users = () => {
         path: null,
         order: "asc"
     });
+    const [errors, setErrors] = useState({});
+    const [searchUsersData, setSearchUsersData] = useState({ search: "" });
+    const validatorConfig = {
+        search: {
+            isNotContainDigit: {
+                message: "Имя не может содержать цифры"
+            }
+        }
+    };
     const [users, setUsers] = useState();
     useEffect(() => {
         api.users.fetchAll().then((data) => setUsers(data));
@@ -24,6 +35,14 @@ const Users = () => {
         setCurrentPage(1);
     }, [selectedProf]);
 
+    useEffect(() => {
+        validate();
+    }, [searchUsersData]);
+    const validate = () => {
+        const errors = validator(searchUsersData, validatorConfig);
+        setErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
     const handleDelete = (userId) => {
         setUsers(users.filter((user) => user._id !== userId));
     };
@@ -35,7 +54,16 @@ const Users = () => {
         );
 
     const handleProfessionSelect = (item) => {
+        setSearchUsersData({ search: "" });
         setSelectedProf(item);
+    };
+
+    const handleSearchUsers = ({ target }) => {
+        setSelectedProf(null);
+        setSearchUsersData((prevState) => ({
+            ...prevState,
+            [target.name]: target.value
+        }));
     };
 
     const handlePageChange = (pageIndex) => setCurrentPage(pageIndex);
@@ -53,12 +81,20 @@ const Users = () => {
                   JSON.stringify(selectedProf)
           )
         : users;
+    const searchUsers =
+        searchUsersData.search.length &&
+        users.filter((user) =>
+            user.name
+                .toLowerCase()
+                .includes(searchUsersData.search.trim().toLowerCase())
+        );
     const count = filteredUsers.length;
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
     const pageSize = 8;
     const usersCrop = paginate(sortedUsers, currentPage, pageSize);
     const clearFilter = () => {
         setSelectedProf(null);
+        setSearchUsersData({ search: "" });
     };
 
     usersCrop.length === 0 && setCurrentPage(currentPage - 1);
@@ -82,9 +118,14 @@ const Users = () => {
             )}
             <div className="d-flex flex-column">
                 <SearchStatus length={count} />
+                <SearchUsers
+                    error={errors.search}
+                    value={searchUsersData.search}
+                    onSearchUsers={handleSearchUsers}
+                />
                 {count > 0 && (
                     <UsersTable
-                        users={usersCrop}
+                        users={searchUsers || usersCrop}
                         onSort={handleSort}
                         selectedSort={sortBy}
                         onDelete={handleDelete}
@@ -92,12 +133,14 @@ const Users = () => {
                     />
                 )}
                 <div className="d-flex justify-content-center">
-                    <Pagination
-                        itemsCount={count}
-                        pageSize={pageSize}
-                        currentPage={currentPage}
-                        onPageChange={handlePageChange}
-                    />
+                    {!searchUsers && (
+                        <Pagination
+                            itemsCount={count}
+                            pageSize={pageSize}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    )}
                 </div>
             </div>
         </div>

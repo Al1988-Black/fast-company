@@ -25,6 +25,11 @@ export function validator(data, config) {
                 statusValidate = data.length < config.valeo;
                 break;
             }
+            case "isNotContainDigit": {
+                const notDigitRegExp = /\d+/g;
+                statusValidate = notDigitRegExp.test(data);
+                break;
+            }
             default:
                 break;
         }
