@@ -33,13 +33,6 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
                             (selectedSort.order === "asc" ? iconUp : iconDown)}
                     </th>
                 ))}
-                {/*                     
-                    <th scope="col">Качество</th>
-                    <th onClick={() => handleSort("profession.name")} scope="col">Проффессия</th>
-                    <th onClick={() =>handleSort("completedMeetings")} scope="col">Встретился, раз</th>
-                    <th onClick={() => handleSort("rate")} scope="col">Оценка</th>
-                    <th onClick={() => handleSort("bookmark")} scope="col">Избранное</th>
-                    <th scope="col" /> */}
             </tr>
         </thead>
     );
