@@ -8,7 +8,7 @@ const UserPage = ({ id }) => {
     const [user, setUser] = useState(null);
     useEffect(() => {
         api.users.getById(id).then((data) => setUser(data));
-    });
+    }, []);
     console.log(user);
     const history = useHistory();
     const handleAllUsers = () => {

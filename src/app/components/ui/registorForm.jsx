@@ -4,20 +4,26 @@ import TextField from "../common/form/textField";
 import api from "../../api";
 import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
+import MultiSelectField from "../common/form/multiSelectField";
+import CheckBoxField from "../common/form/checkBoxField";
 
 const RegistorForm = () => {
     const [data, setData] = useState({
         email: "",
         password: "",
         profession: "",
-        sex: "male"
+        sex: "male",
+        qualities: [],
+        licence: false
     });
+    const [qualities, setQualities] = useState({});
     const [professions, setProfession] = useState();
     useEffect(() => {
         api.professions.fetchAll().then((data) => setProfession(data));
+        api.qualities.fetchAll().then((data) => setQualities(data));
     }, []);
     const [errors, setErrors] = useState({});
-    const handleChange = ({ target }) => {
+    const handleChange = (target) => {
         setData((prevState) => ({
             ...prevState,
             [target.name]: target.value
@@ -50,6 +56,12 @@ const RegistorForm = () => {
         profession: {
             isRequired: {
                 message: "Обязательно выберите свою проффесию"
+            }
+        },
+        licence: {
+            isRequired: {
+                message:
+                    "Вы не можете использовать наш сервис без потверждения лицензионного соглашения"
             }
         }
     };
@@ -88,6 +100,7 @@ const RegistorForm = () => {
             <SelectField
                 onChange={handleChange}
                 options={professions}
+                name="profession"
                 label="Выберете вашу профессию"
                 defaultOption="Choose..."
                 error={errors.profession}
@@ -102,7 +115,23 @@ const RegistorForm = () => {
                 ]}
                 value={data.sex}
                 name="sex"
+                label="Выберите ваш пол"
             />
+            <MultiSelectField
+                onChange={handleChange}
+                defaultValue={data.qualities}
+                options={qualities}
+                name="qualities"
+                label="Выберите ваши качества"
+            />
+            <CheckBoxField
+                value={data.licence}
+                onChange={handleChange}
+                name="licence"
+                error={errors.licence}
+            >
+                Подтвердить <a>лицензионное соглашение</a>
+            </CheckBoxField>
             <button
                 type="submit"
                 disabled={!isValid}
