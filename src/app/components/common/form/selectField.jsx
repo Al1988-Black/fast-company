@@ -13,16 +13,15 @@ const SelectField = ({
     const handleChange = ({ target }) => {
         onChange({ name: target.name, value: target.value });
     };
-    const optionsArray =
-        !Array.isArray(options) && typeof options === "object"
-            ? Object.keys(options).map((optionName) => ({
-                  name: options[optionName].name,
-                  _id: options[optionName]._id
-              }))
-            : options;
     const getInputClasses = () => {
         return "form-select" + (error ? " is-invalid" : "");
     };
+
+    const optionsArray =
+        !Array.isArray(options) && typeof options === "object"
+            ? Object.values(options)
+            : options;
+
     return (
         <div className="mb-4">
             <label htmlFor={name} className="form-label">
@@ -39,12 +38,21 @@ const SelectField = ({
                     {defaultOption}
                 </option>
                 {optionsArray &&
-                    optionsArray.map((option) => (
-                        <option key={option._id} value={option._id}>
-                            {option.name}
-                        </option>
-                    ))}
-                <option value="_id">...</option>
+                    optionsArray.map((option) => {
+                        return value && value === option.value ? (
+                            <option
+                                key={option.value}
+                                value={option.value}
+                                checked
+                            >
+                                {option.label}
+                            </option>
+                        ) : (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        );
+                    })}
             </select>
             {error && <div className="invalid-feedback">{error}</div>}
         </div>

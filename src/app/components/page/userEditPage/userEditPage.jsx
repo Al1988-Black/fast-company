@@ -10,15 +10,67 @@ import { useHistory, useParams } from "react-router-dom";
 const UserEditPage = () => {
     const { userId } = useParams();
     const history = useHistory();
+
     const [dataUser, setDataUser] = useState({});
-    const [qualities, setQualities] = useState({});
-    const [professions, setProfession] = useState();
-    useEffect(() => {
-        api.users.getById(userId).then((data) => setDataUser(data));
-        api.professions.fetchAll().then((data) => setProfession(data));
-        api.qualities.fetchAll().then((data) => setQualities(data));
-    }, []);
+    const [qualities, setQualities] = useState([]);
+    const [professions, setProfessions] = useState([]);
     const [errors, setErrors] = useState({});
+
+    const getProfessionById = (id, professions) => {
+        for (const prof of professions) {
+            if (prof.value === id) {
+                return { _id: prof.value, name: prof.label };
+            }
+        }
+    };
+
+    const getQualities = (elements) => {
+        const qualitiesArray = [];
+        for (const elem of elements) {
+            for (const quality in qualities) {
+                if (elem.value === qualities[quality].value) {
+                    qualitiesArray.push({
+                        _id: qualities[quality].value,
+                        name: qualities[quality].label,
+                        color: qualities[quality].color
+                    });
+                }
+            }
+        }
+        return qualitiesArray;
+    };
+
+    useEffect(() => {
+        api.users.getById(userId).then((data) => {
+            const { _id } = data.profession;
+            const qualitiesUser = data.qualities.map((quality) => ({
+                value: quality._id,
+                label: quality.name,
+                color: quality.color
+            }));
+            setDataUser({
+                ...data,
+                profession: _id,
+                qualities: qualitiesUser
+            });
+        });
+        api.professions.fetchAll().then((data) => {
+            const professionsList = Object.keys(data).map((professionName) => ({
+                label: data[professionName].name,
+                value: data[professionName]._id
+            }));
+            setProfessions(professionsList);
+        });
+        api.qualities.fetchAll().then((data) => {
+            const qualitiesList = Object.keys(data).map((optionName) => ({
+                value: data[optionName]._id,
+                label: data[optionName].name,
+                color: data[optionName].color
+            }));
+            setQualities(qualitiesList);
+        });
+    }, []);
+
     const handleChange = (target) => {
         setDataUser((prevState) => ({
             ...prevState,
@@ -40,11 +92,11 @@ const UserEditPage = () => {
                 message: "Email введен некорректно"
             }
         },
-        // profession: {
-        //     isRequired: {
-        //         message: "Обязательно выберите свою проффесию"
-        //     }
-        // },
+        profession: {
+            isRequired: {
+                message: "Обязательно выберите свою проффесию"
+            }
+        },
         licence: {
             isRequired: {
                 message:
@@ -67,9 +119,14 @@ const UserEditPage = () => {
         const isValid = validate();
         if (!isValid) return;
         api.users
-            .update(userId, dataUser)
-            .then(() => history.replace(`/users/${userId}`));
+            .update(userId, {
+                ...dataUser,
+                profession: getProfessionById(dataUser.profession, professions),
+                qualities: getQualities(dataUser.qualities)
+            })
+            .then(() => history.replace(`/users/${userId}`)); // history.replace(`/users/${userId}`)
     };
+
     if (!dataUser && !qualities && !professions) {
         return <h1>Loading...</h1>;
     }
@@ -80,11 +137,11 @@ const UserEditPage = () => {
                 <div className="col-md-6 offset-md-3 shadow p-4">
                     <form onSubmit={handleSubmit}>
                         <TextField
-                            label="Электронная почта"
+                            label="Имя"
                             name="name"
                             value={dataUser.name}
                             onChange={handleChange}
-                            error={errors.email}
+                            error={errors.name}
                         />
                         <TextField
                             label="Электронная почта"
@@ -100,7 +157,7 @@ const UserEditPage = () => {
                             label="Выберете вашу профессию"
                             defaultOption="Choose..."
                             error={errors.profession}
-                            value=""
+                            value={dataUser.profession}
                         />
                         <RadioField
                             onChange={handleChange}

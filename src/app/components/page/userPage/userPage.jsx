@@ -5,12 +5,10 @@ import { useHistory, useParams } from "react-router-dom";
 
 const UserPage = () => {
     const { userId } = useParams();
-    console.log(userId);
     const [user, setUser] = useState(null);
     useEffect(() => {
         api.users.getById(userId).then((data) => setUser(data));
     }, []);
-    console.log(user);
     const history = useHistory();
     const handleAllUsers = () => {
         history.replace(`/users/${userId}/edit`);

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 const TextField = ({ label, type, name, value, onChange, error }) => {
     const [showPassword, setShowPassord] = useState(false);
+
     const handleChange = ({ target }) => {
         onChange({ name: target.name, value: target.value });
     };
