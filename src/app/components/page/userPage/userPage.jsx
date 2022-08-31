@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../api";
 import Qualities from "../../ui/qualities";
-import { useHistory } from "react-router-dom";
-import PropTypes from "prop-types";
+import { useHistory, useParams } from "react-router-dom";
 
-const UserPage = ({ id }) => {
+const UserPage = () => {
+    const { userId } = useParams();
+    console.log(userId);
     const [user, setUser] = useState(null);
     useEffect(() => {
-        api.users.getById(id).then((data) => setUser(data));
+        api.users.getById(userId).then((data) => setUser(data));
     }, []);
     console.log(user);
     const history = useHistory();
     const handleAllUsers = () => {
-        history.replace("/users");
+        history.replace(`/users/${userId}/edit`);
     };
     if (!user) {
         return <h1>Loading...</h1>;
@@ -30,14 +31,10 @@ const UserPage = ({ id }) => {
                     handleAllUsers();
                 }}
             >
-                все пользователи
+                Изменить
             </button>
         </>
     );
-};
-
-UserPage.propTypes = {
-    id: PropTypes.string.isRequired
 };
 
 export default UserPage;
