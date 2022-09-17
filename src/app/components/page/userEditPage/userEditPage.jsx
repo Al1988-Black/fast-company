@@ -6,6 +6,7 @@ import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import { useHistory, useParams } from "react-router-dom";
+import BackButton from "../../common/backButton";
 
 const UserEditPage = () => {
     const { userId } = useParams();
@@ -134,62 +135,65 @@ const UserEditPage = () => {
 
     return (
         <div className="container mt-5">
-            <div className="row">
-                <div className="col-md-6 offset-md-3 shadow p-4">
-                    {!isLoading && (
-                        <form onSubmit={handleSubmit}>
-                            <TextField
-                                label="Имя"
-                                name="name"
-                                value={dataUser.name}
-                                onChange={handleChange}
-                                error={errors.name}
-                            />
-                            <TextField
-                                label="Электронная почта"
-                                name="email"
-                                value={dataUser.email}
-                                onChange={handleChange}
-                                error={errors.email}
-                            />
-                            <SelectField
-                                onChange={handleChange}
-                                options={professions}
-                                name="profession"
-                                label="Выберете вашу профессию"
-                                defaultOption="Choose..."
-                                error={errors.profession}
-                                value={dataUser.profession}
-                            />
-                            <RadioField
-                                onChange={handleChange}
-                                options={[
-                                    { name: "Male", value: "male" },
-                                    { name: "Female", value: "female" },
-                                    { name: "Other", value: "other" }
-                                ]}
-                                value={dataUser.sex}
-                                name="sex"
-                                label="Выберите ваш пол"
-                            />
-                            <MultiSelectField
-                                onChange={handleChange}
-                                defaultValue={dataUser.qualities}
-                                options={qualities}
-                                name="qualities"
-                                label="Выберите ваши качества"
-                            />
-                            <button
-                                type="submit"
-                                disabled={!isValid}
-                                className="btn btn-primary w-100 mx-auto"
-                            >
-                                Обновить
-                            </button>
-                        </form>
-                    )}
+            {!isLoading && (
+                <div className="container mt-5">
+                    <BackButton />
+                    <div className="row">
+                        <div className="col-md-6 offset-md-3 shadow p-4">
+                            <form onSubmit={handleSubmit}>
+                                <TextField
+                                    label="Имя"
+                                    name="name"
+                                    value={dataUser.name}
+                                    onChange={handleChange}
+                                    error={errors.name}
+                                />
+                                <TextField
+                                    label="Электронная почта"
+                                    name="email"
+                                    value={dataUser.email}
+                                    onChange={handleChange}
+                                    error={errors.email}
+                                />
+                                <SelectField
+                                    onChange={handleChange}
+                                    options={professions}
+                                    name="profession"
+                                    label="Выберете вашу профессию"
+                                    defaultOption="Choose..."
+                                    error={errors.profession}
+                                    value={dataUser.profession}
+                                />
+                                <RadioField
+                                    onChange={handleChange}
+                                    options={[
+                                        { name: "Male", value: "male" },
+                                        { name: "Female", value: "female" },
+                                        { name: "Other", value: "other" }
+                                    ]}
+                                    value={dataUser.sex}
+                                    name="sex"
+                                    label="Выберите ваш пол"
+                                />
+                                <MultiSelectField
+                                    onChange={handleChange}
+                                    defaultValue={dataUser.qualities}
+                                    options={qualities}
+                                    name="qualities"
+                                    label="Выберите ваши качества"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!isValid}
+                                    className="btn btn-primary w-100 mx-auto"
+                                >
+                                    Обновить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
