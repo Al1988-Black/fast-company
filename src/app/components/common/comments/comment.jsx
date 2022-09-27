@@ -18,11 +18,11 @@ const Comment = ({
             setUser(data);
             setIsLoading(false);
         });
-    });
+    }, []);
     return (
         <div className="bg-light card-body  mb-3">
             <div className="row">
-                {!isLoading ? (
+                {isLoading ? (
                     "Loading...."
                 ) : (
                     <div className="col">
