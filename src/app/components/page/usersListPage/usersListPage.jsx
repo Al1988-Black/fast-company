@@ -8,6 +8,7 @@ import GroupList from "../../common/groupList";
 import _ from "lodash";
 import SearchUsers from "../../common/form/searchUsers";
 import { validator } from "../../../utils/validator";
+import { useUsers } from "../../../hooks/useUsers";
 
 const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -26,9 +27,9 @@ const UsersListPage = () => {
             }
         }
     };
-    const [users, setUsers] = useState();
+    const { users } = useUsers();
     useEffect(() => {
-        api.users.fetchAll().then((data) => setUsers(data));
+        // api.users.fetchAll().then((data) => setUsers(data));
         api.professions.fetchAll().then((data) => setProfession(data));
     }, []);
     useEffect(() => {
@@ -44,10 +45,11 @@ const UsersListPage = () => {
         return Object.keys(errors).length === 0;
     };
     const handleDelete = (userId) => {
-        setUsers(users.filter((user) => user._id !== userId));
+        // setUsers(users.filter((user) => user._id !== userId));
+        console.log(userId);
     };
     const handleToggleBookMark = (id) =>
-        setUsers(
+        console.log(
             users.map((user) =>
                 user._id === id ? { ...user, bookmark: !user.bookmark } : user
             )
