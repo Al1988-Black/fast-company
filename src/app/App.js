@@ -7,25 +7,31 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { ProfessionProvider } from "./hooks/useProfesions";
 import { QualityProvider } from "./hooks/useQuality";
+import AuthProvider from "./hooks/useAuth";
+import LoginProvider from "./hooks/useLogin";
 
 function App() {
     return (
         <div>
-            <NavBar />
-            <ProfessionProvider>
-                <QualityProvider>
-                    <Switch>
-                        <Route path="/login/:type?" component={Login} />
-                        <Route
-                            path="/users/:userId?/:edit?"
-                            component={Users}
-                        />
-                        <Route path="/" exact component={Main} />
-                        <Redirect to="/" />
-                    </Switch>
-                    <ToastContainer />
-                </QualityProvider>
-            </ProfessionProvider>
+            <AuthProvider>
+                <LoginProvider>
+                    <NavBar />
+                    <ProfessionProvider>
+                        <QualityProvider>
+                            <Switch>
+                                <Route path="/login/:type?" component={Login} />
+                                <Route
+                                    path="/users/:userId?/:edit?"
+                                    component={Users}
+                                />
+                                <Route path="/" exact component={Main} />
+                                <Redirect to="/" />
+                            </Switch>
+                        </QualityProvider>
+                    </ProfessionProvider>
+                </LoginProvider>
+            </AuthProvider>
+            <ToastContainer />
         </div>
     );
 }
