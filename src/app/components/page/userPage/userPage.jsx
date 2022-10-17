@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
-import api from "../../../api";
+import React from "react";
 import UserCard from "../../ui/userCard";
 import QualitiesCard from "../../ui/qualitiesCard";
 import MeetingCard from "../../ui/meetingCard";
 import PropTypes from "prop-types";
 import Comments from "../../ui/comments";
+import { useUsers } from "../../../hooks/useUsers";
+import { CommentsProvider } from "../../../hooks/useComments";
 
 const UserPage = ({ userId }) => {
-    const [user, setUser] = useState();
-    useEffect(() => {
-        api.users.getById(userId).then((data) => setUser(data));
-    }, []);
+    const { getUserById } = useUsers();
+    const user = getUserById(userId);
 
     if (!user) {
         return "Loading....";
@@ -25,7 +24,9 @@ const UserPage = ({ userId }) => {
                     <MeetingCard value={user.rate} />
                 </div>
                 <div className="col-md-8">
-                    <Comments />
+                    <CommentsProvider>
+                        <Comments />
+                    </CommentsProvider>
                 </div>
             </div>
         </div>

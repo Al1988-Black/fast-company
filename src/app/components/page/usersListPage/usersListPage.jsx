@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import api from "../../../api";
 import SearchStatus from "../../ui/searchStatus";
 import Pagination from "../../common/pagination";
 import UsersTable from "../../ui/usersTable";
@@ -9,10 +8,14 @@ import _ from "lodash";
 import SearchUsers from "../../common/form/searchUsers";
 import { validator } from "../../../utils/validator";
 import { useUsers } from "../../../hooks/useUsers";
+import { useProfession } from "../../../hooks/useProfesions";
+import { useAuth } from "../../../hooks/useAuth";
 
 const UsersListPage = () => {
+    const { users } = useUsers();
+    const { currentUser } = useAuth();
+    const { isLoading: profissionsIsLoading, professions } = useProfession;
     const [currentPage, setCurrentPage] = useState(1);
-    const [professions, setProfession] = useState();
     const [selectedProf, setSelectedProf] = useState(null);
     const [sortBy, setSortBy] = useState({
         path: null,
@@ -27,11 +30,7 @@ const UsersListPage = () => {
             }
         }
     };
-    const { users } = useUsers();
-    useEffect(() => {
-        // api.users.fetchAll().then((data) => setUsers(data));
-        api.professions.fetchAll().then((data) => setProfession(data));
-    }, []);
+
     useEffect(() => {
         setCurrentPage(1);
     }, [selectedProf]);
@@ -75,21 +74,23 @@ const UsersListPage = () => {
     if (!users) {
         return "Loading...";
     }
-
-    const filteredUsers = selectedProf
-        ? users.filter(
-              (user) =>
-                  JSON.stringify(user.profession) ===
-                  JSON.stringify(selectedProf)
-          )
-        : users;
-    const searchUsers =
-        searchUsersData.search.length &&
-        users.filter((user) =>
-            user.name
-                .toLowerCase()
-                .includes(searchUsersData.search.trim().toLowerCase())
-        );
+    function filterUsers(data) {
+        const filteredUsers = searchUsersData.search.length
+            ? data.filter((user) =>
+                  user.name
+                      .toLowerCase()
+                      .includes(searchUsersData.search.trim().toLowerCase())
+              )
+            : selectedProf
+            ? data.filter(
+                  (user) =>
+                      JSON.stringify(user.profession) ===
+                      JSON.stringify(selectedProf)
+              )
+            : data;
+        return filteredUsers.filter((user) => user._id !== currentUser._id);
+    }
+    const filteredUsers = filterUsers(users);
     const count = filteredUsers.length;
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
     const pageSize = 8;
@@ -103,7 +104,7 @@ const UsersListPage = () => {
 
     return (
         <div className="d-flex">
-            {professions && (
+            {professions && profissionsIsLoading && (
                 <div className="d-flex flex-column flex-shrink-0 p-3">
                     <GroupList
                         selectedItem={selectedProf}
@@ -127,7 +128,7 @@ const UsersListPage = () => {
                 />
                 {count > 0 && (
                     <UsersTable
-                        users={searchUsers || usersCrop}
+                        users={usersCrop}
                         onSort={handleSort}
                         selectedSort={sortBy}
                         onDelete={handleDelete}
@@ -135,14 +136,12 @@ const UsersListPage = () => {
                     />
                 )}
                 <div className="d-flex justify-content-center">
-                    {!searchUsers && (
-                        <Pagination
-                            itemsCount={count}
-                            pageSize={pageSize}
-                            currentPage={currentPage}
-                            onPageChange={handlePageChange}
-                        />
-                    )}
+                    <Pagination
+                        itemsCount={count}
+                        pageSize={pageSize}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
                 </div>
             </div>
         </div>

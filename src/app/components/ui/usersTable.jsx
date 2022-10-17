@@ -10,14 +10,13 @@ const UsersTable = ({
     onSort,
     selectedSort,
     onToggleBookMark,
-    onDelete,
     ...rest
 }) => {
     const columns = {
         name: { path: "name", name: "Имя" },
         qualities: {
             name: "Качества",
-            component: (user) => <Qualities qualitiesListId={user.qualities} />
+            component: (user) => <Qualities qualities={user.qualities} />
         },
         profession: {
             name: "Профессия",
@@ -36,16 +35,6 @@ const UsersTable = ({
                     status={user.bookmark}
                     onClick={() => onToggleBookMark(user._id)}
                 />
-            )
-        },
-        delete: {
-            component: (user) => (
-                <button
-                    className="btn bg-danger btn-sm m-2"
-                    onClick={() => onDelete(user._id)}
-                >
-                    delete
-                </button>
             )
         }
     };
@@ -67,7 +56,6 @@ UsersTable.propTypes = {
     onSort: PropTypes.func.isRequired,
     currentSort: PropTypes.object,
     onToggleBookMark: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
     selectedSort: PropTypes.object.isRequired
 };
 
