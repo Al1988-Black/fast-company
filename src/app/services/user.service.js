@@ -16,7 +16,7 @@ const userService = {
         return data;
     },
     update: async (payload) => {
-        const { data } = await httpServece.put(
+        const { data } = await httpServece.patch(
             userEndPoint + payload._id,
             payload
         );

@@ -7,69 +7,55 @@ import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import { useHistory } from "react-router-dom";
 import BackButton from "../../common/backButton";
-import { useUsers } from "../../../hooks/useUsers";
 import { useProfession } from "../../../hooks/useProfesions";
 import { useQuality } from "../../../hooks/useQuality";
 import { useAuth } from "../../../hooks/useAuth";
 
 const UserEditPage = ({ userId }) => {
     const history = useHistory();
-    const { getUserById } = useUsers();
     const { currentUser, updateUser } = useAuth();
-
-    const user = getUserById(userId);
     const { isLoading: isLoadingProfession, professions } = useProfession();
-
     const { qualities, isLoading: isLoadingQuality, getQuality } = useQuality();
-
-    const [dataUser, setDataUser] = useState(user);
-    const [profList, setProfList] = useState([]);
-    const [qualitiesList, setQualitiesList] = useState([]);
+    const [dataUser, setDataUser] = useState();
     const [errors, setErrors] = useState({});
-    const [isLoadingPage, setIsLoading] = useState(false);
+    const [isLoadingPage, setIsLoading] = useState(true);
+
+    // const getQualities = (qualities) => {
+    //     return qualities.map((q) => q.value);
+    // };
+
+    const professionList = professions.map((prof) => ({
+        label: prof.name,
+        value: prof._id
+    }));
+
+    const qualitiesList = qualities.map((q) => ({
+        value: q._id,
+        label: q.name
+    }));
+
     useEffect(() => {
-        if (currentUser._id !== userId) {
-            setIsLoading(true);
-            history.replace(`/users/${currentUser._id}/edit`);
-        }
-    }, []);
-
-    const getQualities = (qualities) => {
-        return qualities.map((q) => q.value);
-    };
-
-    useEffect(() => {
-        setIsLoading(true);
-        if (dataUser._id && !isLoadingQuality && !isLoadingProfession) {
-            const professionArray = professions.map((prof) => ({
-                label: prof.name,
-                value: prof._id
-            }));
-
-            setProfList(professionArray);
-
-            const qualitiesArray = qualities.map((q) => ({
-                value: q._id,
-                label: q.name,
-                color: q.color
-            }));
-
-            setQualitiesList(qualitiesArray);
-
-            const qualitiesUser = user.qualities.map((qualityId) => {
-                const quality = getQuality(qualityId);
-                return {
-                    value: qualityId,
-                    label: quality.name,
-                    color: quality.color
-                };
+        if (
+            !dataUser &&
+            !isLoadingQuality &&
+            !isLoadingProfession &&
+            currentUser
+        ) {
+            setDataUser({
+                ...currentUser,
+                qualities: currentUser.qualities.map((id) => ({
+                    label: getQuality(id)?.name,
+                    value: id
+                }))
             });
-
-            setDataUser({ ...user, qualities: qualitiesUser });
-
-            setIsLoading((prevState) => !prevState);
         }
-    }, [dataUser._id, isLoadingQuality, isLoadingProfession]);
+    }, [dataUser, isLoadingQuality, isLoadingProfession, currentUser]);
+
+    useEffect(() => {
+        if (dataUser && isLoadingPage) {
+            setIsLoading(false);
+        }
+    }, [dataUser]);
 
     console.log(dataUser);
 
@@ -119,11 +105,11 @@ const UserEditPage = ({ userId }) => {
         try {
             await updateUser({
                 ...dataUser,
-                qualities: getQualities(dataUser.qualities)
+                qualities: dataUser.qualities.map((q) => q.value)
             });
             console.log({
                 ...dataUser,
-                qualities: getQualities(dataUser.qualities)
+                qualities: dataUser.qualities.map((q) => q.value)
             });
         } catch (error) {
             setErrors(error);
@@ -156,7 +142,7 @@ const UserEditPage = ({ userId }) => {
                                 />
                                 <SelectField
                                     onChange={handleChange}
-                                    options={profList}
+                                    options={professionList}
                                     name="profession"
                                     label="Выберете вашу профессию"
                                     defaultOption="Choose..."
