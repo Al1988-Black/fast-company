@@ -44,7 +44,7 @@ const UserProvider = ({ children }) => {
             newUsers[indexUser] = currentUser;
             setUsers(newUsers);
         }
-    }, [currentUser]);
+    }, [currentUser]); // обновление пользователя
     function errorCatcher(error) {
         const { message } = error.response.data;
         setError(message);
