@@ -12,6 +12,7 @@ export const QualityProvider = ({ children }) => {
     const [qualities, setQualities] = useState([]);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         getQualitiesList();
     }, []);
@@ -23,7 +24,7 @@ export const QualityProvider = ({ children }) => {
     }, [error]);
     async function getQualitiesList() {
         try {
-            const { content } = await qualityService.get();
+            const { content } = await qualityService.fetchAll();
             setQualities(content);
             setIsLoading(false);
         } catch (error) {
