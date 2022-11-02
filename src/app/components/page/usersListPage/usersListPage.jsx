@@ -8,13 +8,18 @@ import _ from "lodash";
 import SearchUsers from "../../common/form/searchUsers";
 import { validator } from "../../../utils/validator";
 import { useUsers } from "../../../hooks/useUsers";
-import { useProfession } from "../../../hooks/useProfesions";
 import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from "../../../store/professions";
 
 const UsersListPage = () => {
     const { users } = useUsers();
     const { currentUser } = useAuth();
-    const { isLoading: profissionsIsLoading, professions } = useProfession;
+    const professionsIsLoading = useSelector(getProfessionsLoadingStatus());
+    const professions = useSelector(getProfessions());
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedProf, setSelectedProf] = useState(null);
     const [sortBy, setSortBy] = useState({
@@ -104,7 +109,7 @@ const UsersListPage = () => {
 
     return (
         <div className="d-flex">
-            {professions && profissionsIsLoading && (
+            {professions && professionsIsLoading && (
                 <div className="d-flex flex-column flex-shrink-0 p-3">
                     <GroupList
                         selectedItem={selectedProf}

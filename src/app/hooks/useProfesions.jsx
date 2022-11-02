@@ -23,7 +23,7 @@ export const ProfessionProvider = ({ children }) => {
     }, [error]);
     async function getProfessionsList() {
         try {
-            const { content } = await professionService.get();
+            const { content } = await professionService.fetchAll();
             setProfessions(content);
             setIsLoading(false);
         } catch (error) {

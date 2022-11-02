@@ -6,7 +6,8 @@ const qualitiesSlice = createSlice({
     initialState: {
         entities: null,
         isLoading: true,
-        error: null
+        error: null,
+        lastFetch: null
     },
     reducers: {
         qualitiesRequested: (state) => {
@@ -14,6 +15,7 @@ const qualitiesSlice = createSlice({
         },
         qualitiesReceved: (state, action) => {
             state.entities = action.payload;
+            state.lastFetch = Date.now();
             state.isLoading = false;
         },
         qualitiesRequestFiled: (state, action) => {
@@ -25,23 +27,31 @@ const qualitiesSlice = createSlice({
 
 const { reducer: qualitiesReducer, actions } = qualitiesSlice;
 const { qualitiesRequested, qualitiesReceved, qualitiesRequestFiled } = actions;
+function isOutdated(date) {
+    if (Date.now() - date > 10 * 60 * 1000) {
+        return true;
+    }
+    return false;
+}
 
-export const loadQualitiesList = () => async (dispatch) => {
-    dispatch(qualitiesRequested);
-    try {
-        const { content } = await qualityService.fetchAll();
-        console.log(content);
-        dispatch(qualitiesReceved(content));
-    } catch (error) {
-        dispatch(qualitiesRequestFiled(error.message));
+export const loadQualitiesList = () => async (dispatch, getState) => {
+    const { lastFetch } = getState().qualities;
+    if (isOutdated(lastFetch)) {
+        dispatch(qualitiesRequested());
+        try {
+            const { content } = await qualityService.fetchAll();
+            dispatch(qualitiesReceved(content));
+        } catch (error) {
+            dispatch(qualitiesRequestFiled(error.message));
+        }
     }
 };
 
 export const getQualities = () => (state) => state.qualities.entities;
 export const getQualitiesLoadingStatus = () => (state) =>
     state.qualities.isLoading;
-export const getQualityById = () => (state) => (id) =>
-    state.qualities.entities.find((e) => e.id === id);
+// export const getQualityById = () => (state) => (id) =>
+//     state.qualities.entities.find((e) => e.id === id);
 export const getQualitiesByIds = (qualitiesIds) => (state) => {
     if (state.qualities.entities) {
         const qualitiesArray = [];

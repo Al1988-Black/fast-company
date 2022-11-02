@@ -7,13 +7,16 @@ import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import { useHistory } from "react-router-dom";
 import BackButton from "../../common/backButton";
-import { useProfession } from "../../../hooks/useProfesions";
 import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import {
     getQualities,
     getQualitiesLoadingStatus
 } from "../../../store/qualities";
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from "../../../store/professions";
 
 const UserEditPage = ({ userId }) => {
     const history = useHistory();
@@ -21,7 +24,8 @@ const UserEditPage = ({ userId }) => {
     const [dataUser, setDataUser] = useState();
     const [isLoadingPage, setIsLoading] = useState(true);
     const [errors, setErrors] = useState({});
-    const { professions, isLoading: professionLoading } = useProfession();
+    const professions = useSelector(getProfessions());
+    const professionLoading = useSelector(getProfessionsLoadingStatus());
     const professionsList = professions.map((p) => ({
         label: p.name,
         value: p._id
