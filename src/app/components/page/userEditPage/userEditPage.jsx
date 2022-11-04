@@ -5,10 +5,8 @@ import TextField from "../../common/form/textField";
 import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
-import { useHistory } from "react-router-dom";
 import BackButton from "../../common/backButton";
-import { useAuth } from "../../../hooks/useAuth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
     getQualities,
     getQualitiesLoadingStatus
@@ -17,10 +15,11 @@ import {
     getProfessions,
     getProfessionsLoadingStatus
 } from "../../../store/professions";
+import { getCurrentUserData, updateUser } from "../../../store/users";
 
 const UserEditPage = ({ userId }) => {
-    const history = useHistory();
-    const { currentUser, updateUser } = useAuth();
+    const currentUser = useSelector(getCurrentUserData());
+    const dispatch = useDispatch();
     const [dataUser, setDataUser] = useState();
     const [isLoadingPage, setIsLoading] = useState(true);
     const [errors, setErrors] = useState({});
@@ -37,16 +36,16 @@ const UserEditPage = ({ userId }) => {
         value: q._id
     }));
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        await updateUser({
-            ...dataUser,
-            qualities: dataUser.qualities.map((q) => q.value)
-        });
-
-        history.push(`/users/${currentUser._id}`);
+        dispatch(
+            updateUser({
+                ...dataUser,
+                qualities: dataUser.qualities.map((q) => q.value)
+            })
+        );
     };
     function getQualitiesListByIds(qualitiesIds) {
         const qualitiesArray = [];

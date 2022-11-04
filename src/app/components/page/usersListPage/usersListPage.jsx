@@ -7,17 +7,16 @@ import GroupList from "../../common/groupList";
 import _ from "lodash";
 import SearchUsers from "../../common/form/searchUsers";
 import { validator } from "../../../utils/validator";
-import { useUsers } from "../../../hooks/useUsers";
-import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import {
     getProfessions,
     getProfessionsLoadingStatus
 } from "../../../store/professions";
+import { getCurrentUserId, getUsersList } from "../../../store/users";
 
 const UsersListPage = () => {
-    const { users } = useUsers();
-    const { currentUser } = useAuth();
+    const users = useSelector(getUsersList());
+    const currentUserId = useSelector(getCurrentUserId());
     const professionsIsLoading = useSelector(getProfessionsLoadingStatus());
     const professions = useSelector(getProfessions());
     const [currentPage, setCurrentPage] = useState(1);
@@ -93,7 +92,7 @@ const UsersListPage = () => {
                       JSON.stringify(selectedProf)
               )
             : data;
-        return filteredUsers.filter((user) => user._id !== currentUser._id);
+        return filteredUsers.filter((user) => user._id !== currentUserId);
     }
     const filteredUsers = filterUsers(users);
     const count = filteredUsers.length;

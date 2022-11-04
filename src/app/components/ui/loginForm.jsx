@@ -3,10 +3,13 @@ import { validator } from "../../utils/validator";
 import TextField from "../common/form/textField";
 import CheckBoxField from "../common/form/checkBoxField";
 import { useHistory } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useDispatch } from "react-redux";
+import { logIn } from "../../store/users";
+
 // import * as yup from "yup"; // npm install -S yup , удалить npm uninstall yup
 
 const LoginForm = () => {
+    const dispatch = useDispatch();
     const [data, setData] = useState({
         email: "",
         password: "",
@@ -20,7 +23,7 @@ const LoginForm = () => {
         }));
     };
     const history = useHistory();
-    const { logIn } = useAuth();
+    // const { logIn } = useAuth();
     // const validateScheme = yup.object().shape({
     //     password: yup
     //         .string()
@@ -84,20 +87,14 @@ const LoginForm = () => {
         return Object.keys(errors).length === 0;
     };
     const isValid = Object.keys(errors).length === 0;
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        try {
-            await logIn(data);
-            history.push(
-                history.location.state.from.pathname
-                    ? history.location.state.from.pathname
-                    : "/"
-            );
-        } catch (error) {
-            setErrors(error);
-        }
+        const redirect = history.location.state
+            ? history.location.state.from.pathname
+            : "/";
+        dispatch(logIn({ payload: data, redirect }));
     };
     return (
         <form onSubmit={handleSubmit}>
