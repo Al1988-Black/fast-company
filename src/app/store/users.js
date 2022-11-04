@@ -3,6 +3,7 @@ import authService from "../services/auth.service";
 import localStoradgeService from "../services/localStoradge. service";
 import userService from "../services/user.service";
 import getRandomInt from "../utils/getRandomInt";
+import generateAuthError from "../utils/generateAuthError";
 import history from "../utils/history";
 
 const initialState = localStoradgeService.getAccessToken()
@@ -64,6 +65,9 @@ const usersSlice = createSlice({
             );
             console.log(action.payload);
             state.entities[index] = action.payload;
+        },
+        authRequested: (state) => {
+            state.error = null;
         }
     }
 });
@@ -77,10 +81,9 @@ const {
     authRequestedFiled,
     userCreated,
     userLoggedOut,
-    userUpdate
+    userUpdate,
+    authRequested
 } = actions;
-
-const authRequested = createAction("users/authRequested");
 const userCreateRequested = createAction("users/userCreateRequested");
 const userCreateFiled = createAction("users/userCreateFiled");
 const userUpdateRequested = createAction("users/userUpdateRequested");
@@ -97,7 +100,13 @@ export const logIn =
             dispatch(authRequestedSuccess({ userId: data.localId }));
             history.push(redirect);
         } catch (error) {
-            dispatch(authRequestedFiled(error.message));
+            const { code, message } = error.response.data.error;
+            if (code === 400) {
+                const errorMessage = generateAuthError(message);
+                dispatch(authRequestedFiled(errorMessage));
+            } else {
+                dispatch(authRequestedFiled(error.message));
+            }
         }
     };
 
@@ -188,5 +197,7 @@ export const getCurrentUserData = () => (state) => {
         ? state.users.entities.find((u) => u._id === state.users.auth.userId)
         : null;
 };
+
+export const getAuthError = () => (state) => state.users.error;
 
 export default usersReducer;

@@ -6,7 +6,6 @@ import LogOut from "./layout/logOut";
 import NavBar from "./components/ui/navBar";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { ProfessionProvider } from "./hooks/useProfesions";
 import ProtectedRoute from "./components/common/protectedRoute";
 import AppLoader from "./components/ui/hoc/appLoader";
 
@@ -15,18 +14,16 @@ function App() {
         <div>
             <AppLoader>
                 <NavBar />
-                <ProfessionProvider>
-                    <Switch>
-                        <Route path="/login/:type?" component={Login} />
-                        <ProtectedRoute
-                            path="/users/:userId?/:edit?"
-                            component={Users}
-                        />
-                        <Route path="/logout" component={LogOut} />
-                        <Route path="/" exact component={Main} />
-                        <Redirect to="/" />
-                    </Switch>
-                </ProfessionProvider>
+                <Switch>
+                    <Route path="/login/:type?" component={Login} />
+                    <ProtectedRoute
+                        path="/users/:userId?/:edit?"
+                        component={Users}
+                    />
+                    <Route path="/logout" component={LogOut} />
+                    <Route path="/" exact component={Main} />
+                    <Redirect to="/" />
+                </Switch>
             </AppLoader>
             <ToastContainer />
         </div>

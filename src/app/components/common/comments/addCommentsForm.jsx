@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import AreaTextField from "../form/areaTextField";
 import { validator } from "../../../utils/validator";
+import { nanoid } from "nanoid";
 import PropTypes from "prop-types";
 
-const AddCommentsForm = ({ onSubmit }) => {
+const AddCommentsForm = ({ onSubmit, userId, currentUserId }) => {
     const [data, setData] = useState({});
     // const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
@@ -37,7 +38,13 @@ const AddCommentsForm = ({ onSubmit }) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        onSubmit(data);
+        onSubmit({
+            ...data,
+            _id: nanoid(),
+            pageId: userId,
+            created_at: Date.now(),
+            userId: currentUserId
+        });
         clearForm();
     };
 
@@ -66,6 +73,8 @@ const AddCommentsForm = ({ onSubmit }) => {
 };
 
 AddCommentsForm.propTypes = {
-    onSubmit: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    userId: PropTypes.string.isRequired,
+    currentUserId: PropTypes.string.isRequired
 };
 export default AddCommentsForm;

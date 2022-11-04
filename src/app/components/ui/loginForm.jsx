@@ -3,8 +3,8 @@ import { validator } from "../../utils/validator";
 import TextField from "../common/form/textField";
 import CheckBoxField from "../common/form/checkBoxField";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { logIn } from "../../store/users";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthError, logIn } from "../../store/users";
 
 // import * as yup from "yup"; // npm install -S yup , удалить npm uninstall yup
 
@@ -15,6 +15,7 @@ const LoginForm = () => {
         password: "",
         stayOn: false
     });
+    const loginError = useSelector(getAuthError());
     const [errors, setErrors] = useState({});
     const handleChange = (target) => {
         setData((prevState) => ({
@@ -120,6 +121,7 @@ const LoginForm = () => {
             >
                 Оставаться в системе
             </CheckBoxField>
+            {loginError && <p className="text-danger">{loginError}</p>}
             <button
                 type="submit"
                 disabled={!isValid}

@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { loadCommentsList } from "../../../store/comments";
 import { loadProfessionsList } from "../../../store/professions";
 import { loadQualitiesList } from "../../../store/qualities";
 import {
@@ -18,6 +19,7 @@ const AppLoader = ({ children }) => {
         dispatch(loadProfessionsList());
         if (isLoggedIn) {
             dispatch(loadUsersList());
+            dispatch(loadCommentsList());
         }
     }, [isLoggedIn]);
     if (usersLoadingStatus) return "Loading";

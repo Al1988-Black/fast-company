@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { displayDate } from "../../../utils/displayDate";
-import { getCurrentUserData, getUserById } from "../../../store/users";
+import { getCurrentUserId, getUserById } from "../../../store/users";
 import { useSelector } from "react-redux";
 
 const Comment = ({
@@ -11,7 +11,7 @@ const Comment = ({
     userId,
     onRemove
 }) => {
-    const currentUserId = useSelector(getCurrentUserData());
+    const currentUserId = useSelector(getCurrentUserId());
     const user = useSelector(getUserById(userId));
 
     return (
